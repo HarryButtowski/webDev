@@ -1,8 +1,27 @@
 FROM ubuntu:18.04
 
-# install jre
-RUN mkdir -p /usr/share/man/man1 \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# install php
+RUN apt-get update \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository ppa:ondrej/php \
     && apt-get update \
+    && apt-get install -y \
+        php7.2-cli \
+        php7.2-common \
+        php7.2-curl \
+        php7.2-json \
+        php7.2-xml \
+        php7.2-mbstring \
+        php7.2-pgsql \
+        php7.2-zip \
+        php7.2-bcmath \
+        php7.2-gd \
+        php7.2-dev
+
+# install app
+RUN mkdir -p /usr/share/man/man1 \
     && apt-get install -y default-jre \
     firefox \
     chromium-browser \
@@ -20,7 +39,9 @@ RUN userdel -f www-data &&\
     useradd -l -u ${USER_ID} -g www-data www-data &&\
     install -d -m 0755 -o www-data -g www-data /home/www-data
 
-RUN usermod -aG sudo www-data
+RUN usermod -aG sudo www-data \
+    && echo 'sudo visudo' >> /etc/sudoers \
+    && echo 'www-data     ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers
 
 # clean up
 RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
