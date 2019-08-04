@@ -29,6 +29,10 @@ RUN mkdir -p /usr/share/man/man1 \
     curl \
     sudo
 
+# install npm
+RUN apt update \
+    && apt install -y npm
+
 # create www-data user
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -49,6 +53,13 @@ RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 # install PhpStorm
 RUN cd /home/www-data \
     && curl -SL http://download.jetbrains.com/webide/PhpStorm-2018.3.6.tar.gz |tar zx
+
+# install composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "if (hash_file('sha384', 'composer-setup.php') === 'a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php --filename=composer \
+    && php -r "unlink('composer-setup.php');" \
+    && mv composer /usr/bin/
 
 USER www-data
 
