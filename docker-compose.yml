@@ -37,6 +37,15 @@ services:
     ports:
       - 8080:80
 
+  postgres:
+    image: postgres:latest
+    networks:
+      - backend
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=postgres
+
 networks:
   backend:
     driver: "bridge"
